@@ -20,20 +20,20 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Vite app
         run: npm run build
 
-      - name: Ensure docs folder exists
-        run: mkdir -p docs
-
       - name: Remove old docs (except README.md)
         run: |
-          find docs/* ! -name 'README.md' -delete || true
+          mkdir -p docs
+          find docs/* ! -name 'README.md' -exec rm -rf {} +
 
       - name: Copy dist to docs
-        run: cp -r dist/* docs/
+        run: |
+          if [ ! -d dist ]; then echo "dist/ does not exist!"; exit 1; fi
+          cp -r dist/* docs/
 
       - name: Commit and push changes to docs
         uses: stefanzweifel/git-auto-commit-action@v5
