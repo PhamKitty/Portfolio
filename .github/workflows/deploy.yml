@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,15 +25,15 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      - name: Remove old docs (except README)
+      - name: Ensure docs folder exists
+        run: mkdir -p docs
+
+      - name: Remove old docs (except README.md)
         run: |
-          shopt -s extglob
-          rm -rf docs/!(README.md)
+          find docs/* ! -name 'README.md' -delete || true
 
       - name: Copy dist to docs
-        run: |
-          mkdir -p docs
-          cp -r dist/* docs/
+        run: cp -r dist/* docs/
 
       - name: Commit and push changes to docs
         uses: stefanzweifel/git-auto-commit-action@v5
